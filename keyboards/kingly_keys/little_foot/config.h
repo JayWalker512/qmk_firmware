@@ -56,3 +56,6 @@
 #define RGBLIGHT_HUE_STEP 6
 #define RGBLIGHT_SAT_STEP 4
 #define RGBLIGHT_VAL_STEP 8
+
+/* Tap dance config */
+#define TAPPING_TERM 250
