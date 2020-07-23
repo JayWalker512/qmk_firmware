@@ -73,7 +73,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_F5,   KC_F6,   KC_F7,        KC_F8,   KC_F9,       KC_F10,
     KC_ESC,  KC_HOME, KC_UP,   KC_END,   KC_PGUP, KC_TRNS, TD(TD_RESET), KC_MINS, KC_EQL,      KC_BSLS,
     KC_TAB,  KC_LEFT, KC_DOWN, KC_RIGHT, KC_PGDN, KC_TRNS, KC_GRV,  KC_LBRC, KC_RBRC,          KC_QUOT,
-    KC_LCTRL, KC_LALT, KC_CAPS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_LALT,          KC_LCTRL,
+    KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_LALT, KC_LGUI,         KC_LCTRL,
           TD(TD_CTRL_SUPER_ALT),  TD(TD_SHIFT_ALT),  LT(_FN, KC_SPACE),   KC_DEL
   )
 };
+
+/** TODO want to add some kind of toggleable game-mode layer. Playing games
+with the multiple-functionality space/shift keys is frustrating. Being able
+to temporarily disable that and have a basic game layout would be great. */
