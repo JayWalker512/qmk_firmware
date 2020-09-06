@@ -9,11 +9,15 @@ enum {
   _FN
 };
 
-enum {
+enum tapdance_codes {
   TD_CTRL_SUPER_ALT = 0,
   TD_SCLN_ENTER,
   TD_RESET,
   TD_SHIFT_ALT
+};
+
+enum custom_keycodes {
+  KC_STATS = SAFE_RANGE,
 };
 
 void ctrl_super_alt_finished (qk_tap_dance_state_t *state, void *user_date) {
@@ -73,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_F5,   KC_F6,   KC_F7,        KC_F8,   KC_F9,       KC_F10,
     KC_ESC,  KC_HOME, KC_UP,   KC_END,   KC_PGUP, KC_TRNS, TD(TD_RESET), KC_MINS, KC_EQL,      KC_BSLS,
     KC_TAB,  KC_LEFT, KC_DOWN, KC_RIGHT, KC_PGDN, KC_TRNS, KC_GRV,  KC_LBRC, KC_RBRC,          KC_QUOT,
-    KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_TRNS, KC_TRNS, KC_TRNS, KC_LALT, KC_LGUI,         KC_LCTRL,
+    KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS,  KC_STATS, KC_TRNS, KC_TRNS, KC_LALT, KC_LGUI,         KC_LCTRL,
           TD(TD_CTRL_SUPER_ALT),  TD(TD_SHIFT_ALT),  LT(_FN, KC_SPACE),   KC_DEL
   )
 };
@@ -81,3 +85,60 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 /** TODO want to add some kind of toggleable game-mode layer. Playing games
 with the multiple-functionality space/shift keys is frustrating. Being able
 to temporarily disable that and have a basic game layout would be great. */
+
+typedef struct stats_s {
+    uint64_t total = 0;
+    uint32_t count = 0;
+    uint16_t min = 65535;
+    uint16_t max = 0;
+} stats_t;
+static stats_t stats;
+
+#define STRING_CONTAINER_SIZE = 16;
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+
+  if (record->event.pressed && keycode == KC_STATS) {
+    // Print out the keypress statistics
+    SEND_STRING("Keypress duration statistics:\n");
+
+    // TODO print the stats
+    char numberStr[STRING_CONTAINER_SIZE] = "";
+    SEND_STRING("Min: ");
+    // TODO convert stats.min to ascii in numberStr and print it
+    SEND_STRING("\n");
+    SEND_STRING("Max: ");
+    // TODO convert stats.max to ascii in numberStr and print it
+    SEND_STRING("\n");
+    SEND_STRING("Average: ");
+    // TODO convert (stats.total / stats.count_ to ascii in numberStr and print it
+    SEND_STRING("\n");
+  }
+
+
+  /* This section tracks the average key press duration. It watches one key at a time, and
+   * logs the duration in the stats struct. This information is useful for tuning variables such as
+   * TAPPING_TERM. */
+  static uint16_t keydown_timer = 0;
+  static uint16_t keycode_down = 0;
+  static bool keydown = false;
+  if (record->event.pressed && keycode != KC_STATS) {
+    // start the timer
+    if (!keydown) {
+        keycode_down = keycode;
+        keydown = true;
+        keydown_timer = timer_read();
+    }
+  } else {
+    // finish the timer, log stats
+    if (keydown && keycode == keycode_down) {
+        uint16_t duration = timer_elapse(keydown_timer);
+        stats.total += duration;
+        stats.count += 1;
+        if (duration < stats.min) { stats.min = duration; }
+        if (duratino > stats.max) { stats.max = duration; }
+        keydown = false;
+    }
+  }
+
+  return true;
+}
